@@ -1,16 +1,18 @@
+import heapq
+from collections import Counter
+
 class Solution:
     def topKFrequent(self, nums: List[int], k: int) -> List[int]:
-        count = {}
-        freq = [[] for i in range(len(nums) + 1)]
+        # Use Counter to get frequencies in O(n) time
+        counts = Counter(nums)
 
-        for num in nums:
-            count[num] = 1 + count.get(num, 0)
-        for num, cnt in count.items():
-            freq[cnt].append(num)
-        
-        res = []
-        for i in range(len(freq) - 1, 0, -1):
-            for num in freq[i]:
-                res.append(num)
-                if len(res) == k:
-                    return res
+        # Use a min-heap of size k to track the top k frequent elements
+        # We store tuples of (frequency, element) in the heap
+        min_heap = []
+        for num, count in counts.items():
+            heapq.heappush(min_heap, (count, num))
+            if len(min_heap) > k:
+                heapq.heappop(min_heap)
+
+        # Extract the elements from the heap
+        return [num for count, num in min_heap]
